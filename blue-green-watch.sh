@@ -1,13 +1,12 @@
 #!/bin/bash
 # Requires 'helm', 'yq', 'jq', 'sed', 'curl', 'printf"
 # Author: Christian Geuer-Pollmann <chgeuer@microsoft.com>
-declare slots=( "blue" "green" ) releaseNames=( "api-poi" "api-trip" "api-user" "api-user-java" ) format="| %-15s | %-5s | %-10s | %-6s | %-12s | %-8s | %s"
+declare slots=( "blue" "green" ) releaseNames=( "api-poi" "api-trip" "api-user" "api-user-java" ) format="| %-15s | %-5s | %-10s | %-6s | %-7s | %6s |"
+
 declare -A helmValues
-function downloadHelmData { local releaseName="$1"; helm get values --all "${releaseName}" | yq . ; }
-for releaseName in "${releaseNames[@]}"; do
-    helmValues["${releaseName}"]="$(downloadHelmData "${releaseName}")"
-done
 function getCachedHelmData { local releaseName="$1" ; echo "${helmValues["${releaseName}"]}" ; }
+for releaseName in "${releaseNames[@]}"; do helmValues["${releaseName}"]="$(helm get values --all "${releaseName}" | yq . )"; done
+
 function getJsonVal { echo $(echo "$1" | jq -r "$2") ; }
 function prodSlot { echo $(getJsonVal "$1" ".productionSlot") ; }
 function status { echo $(getJsonVal "$1" ".$2.enabled" | sed 's/true/running/g' | sed 's/false/empty/g') ; }
@@ -19,7 +18,7 @@ function http_status { echo $(curl --silent --output /dev/null --write-out '%{ht
 function displayProd { local s1="$1" s2="$2"; if [ "${s1}" == "${s2}" ]; then echo "Production"; else echo "Staging"; fi ; }
 function displayHealth { if [ $1 == $2 ]; then echo "$3"; else echo "$4"; fi ; }
 function displayHeader { printf "${format}\n" "helm release" "slot" "role" "health" "status" "tag" ; }
-function displaySep { printf "${format}\n" "---------------" "-----" "----------" "------" "------------" "--------" ; }
+function displaySep { printf "${format}\n" "---------------" "-----" "----------" "------" "-------" "------" ; }
 function displaySlot {
     local releaseName="$1" slot="$2" json=$(getCachedHelmData ${releaseName})
     local productionSlot=$(prodSlot "${json}")
