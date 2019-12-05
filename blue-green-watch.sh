@@ -1,7 +1,7 @@
 #!/bin/bash
 # Requires 'helm', 'yq', 'jq', 'sed', 'curl', 'printf"
 # Author: Christian Geuer-Pollmann <chgeuer@microsoft.com>
-declare slots=( "blue" "green" ) releaseNames=( "api-poi" "api-trip" "api-user" "api-user-java" ) format="| %-15s | %-5s | %-10s | %-6s | %-7s | %6s | %s"
+declare slots=( "blue" "green" ) releaseNames=( "api-poi" "api-trip" "api-user" "api-user-java" ) format="| %-15s | %-5s | %-10s | %-6s | %-7s | %6s |"
 declare -A helmValues
 function getCachedHelmData { local releaseName="$1" ; echo "${helmValues["${releaseName}"]}" ; }
 for releaseName in "${releaseNames[@]}"; do helmValues["${releaseName}"]="$(helm get values --all "${releaseName}" | yq . )"; done
@@ -21,7 +21,7 @@ function http_status { echo $(curl --silent --output /dev/null --write-out '%{ht
 function displayProd { local s1="$1" s2="$2"; if [ "${s1}" == "${s2}" ]; then echo "Production"; else echo "Staging"; fi ; }
 function displayHealth { if [ $1 == $2 ]; then echo "$3"; else echo "$4"; fi ; }
 function displayHeader { printf "${format}\n" "helm release" "slot" "role" "health" "status" "tag" ; }
-function displaySep { printf "${format}\n" "---------------" "-----" "----------" "------" "-------" "------" "xxx"; }
+function displaySep { printf "${format}\n" "---------------" "-----" "----------" "------" "-------" "------" ; }
 function displaySlot {
     local releaseName="$1" slot="$2" json=$(getCachedHelmData ${releaseName})
     local productionSlot=$(prodSlot "${json}")
@@ -31,8 +31,7 @@ function displaySlot {
         "$(displayProd "${slot}" "${productionSlot}")" \
         "$(displayHealth "${slot}" "${productionSlot}" "${healthProd}" "${healthStaging}")" \
         "$(status "${json}" "${slot}")" \
-        "$(tag "${json}" "${slot}")" \
-        "$(nextSlot "${slot}")"
+        "$(tag "${json}" "${slot}")"
 }
 
 echo "$(displayHeader)"
