@@ -1,5 +1,6 @@
 #!/bin/bash
 # Requires 'helm', 'yq', 'jq', 'sed', 'curl', 'printf"
+# Author: Christian Geuer-Pollmann <chgeuer@microsoft.com>
 slots=( "blue" "green" ) apis=( "api-poi" "api-trip" "api-user" "api-user-java" ) format="%-15s %-5s %-10s %-6s %-12s %-8s %s"
 declare -A helmValues
 function downloadHelmData { helm get values --all "$1" | yq . ; }
