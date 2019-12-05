@@ -1,0 +1,8 @@
+# This is Git's per-user configuration file.
+[user]
+name = Christian Geuer-Pollmann
+email = chgeuer@microsoft.com
+
+# Please adapt and uncomment the following lines:
+#	name = Ubuntu
+#	email = jenkins@jenkinsVM.1aq4hkw24tgenmg2zqbtjklmgg.fx.internal.cloudapp.net

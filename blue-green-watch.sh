@@ -1,7 +1,7 @@
 #!/bin/bash
 # Requires 'helm', 'yq', 'jq', 'sed', 'curl', 'printf"
 # Author: Christian Geuer-Pollmann <chgeuer@microsoft.com>
-slots=( "blue" "green" ) apis=( "api-poi" "api-trip" "api-user" "api-user-java" ) format="%-15s %-5s %-10s %-6s %-12s %-8s %s"
+slots=( "blue" "green" ) apis=( "api-poi" "api-trip" "api-user" "api-user-java" ) format="| %-15s | %-5s | %-10s | %-6s | %-12s | %-8s | %s"
 declare -A helmValues
 function downloadHelmData { helm get values --all "$1" | yq . ; }
 for api in "${apis[@]}"; do
@@ -19,6 +19,7 @@ function http_status { echo $(curl --silent --output /dev/null --write-out '%{ht
 function displayProd { if [ $1 == $2 ]; then echo "Production"; else echo "Staging"; fi ; }
 function displayHealth { if [ $1 == $2 ]; then echo "$3"; else echo "$4"; fi ; }
 function displayHeader { printf "${format}\n" "api" "slot" "role" "health" "status" "tag" ; }
+function displaySep { printf "${format}\n" "----" "----" "----" "----" "----" "----" ; }
 function displaySlot {
     api="$1" slot="$2"
     json=$(getCachedHelmData ${api})
@@ -33,8 +34,9 @@ function displaySlot {
 }
 
 echo "$(displayHeader)"
-for api in "${apis[@]}"; do 
 for slot in "${slots[@]}"; do 
+echo "$(displaySep)"
+for api in "${apis[@]}"; do 
 echo "$(displaySlot "${api}" "${slot}")"
 done
 done
