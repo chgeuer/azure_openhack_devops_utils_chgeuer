@@ -15,9 +15,7 @@ function displayHealth { if [ $1 == $2 ]; then echo "$3"; else echo "$4"; fi ; }
 function displayHeader { printf "${format}\n" "api" "slot" "role" "health" "status" "tag"; }
 function displaySlot {
     api="$1" slot="$2" json=$(getHelmData ${api}) productionSlot=$(prodSlot "${json}") healthProd=$(http_status "http://$(healthURL "${json}")") healthStaging=$(http_status "http://stage$(healthURL "${json}")")
-    printf "${format}" \
-        "${api}" \
-        "${slot}" \
+    printf "${format}" "${api}" "${slot}" \
         "$(displayProd "${slot}" "${productionSlot}")" \
         "$(displayHealth "${slot}" "${productionSlot}" "${healthProd}" "${healthStaging}")" \
         "$(status "${json}" "${slot}")" \
