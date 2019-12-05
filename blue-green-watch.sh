@@ -1,6 +1,6 @@
 #!/bin/bash
 # Requires 'helm', 'yq', 'jq', 'sed', 'curl'
-slot1="blue" slot2="green" apis=( "api-poi" "api-trip" "api-user" "api-user-java" )
+slots=( "blue" "green" ) apis=( "api-poi" "api-trip" "api-user" "api-user-java" ) format="%-15s %-5s %-10s %-6s %-12s %-8s %s"
 function getHelmData { helm get values --all "$1" | yq . ; }
 function getJsonVal { echo $(echo "$1" | jq -r "$2") ; }
 function prodSlot { echo $(getJsonVal "$1" ".productionSlot") ; }
@@ -11,10 +11,22 @@ function healthPath { echo "$(getJsonVal "$1" ".ingress.rules.endpoint.paths[] |
 function healthURL { echo "$(healthHost "$1")$(healthPath "$1")" ; }
 function http_status { echo $(curl --silent --output /dev/null --write-out '%{http_code}' $1) ; }
 function displayProd { if [ $1 == $2 ]; then echo "Production"; else echo "Staging"; fi ; }
-function displayHealth { if [ $1 == $2 ]; then echo "health=$3"; else echo "health=$4"; fi ; }
-for api in "${apis[@]}"; do
-  json=$(getHelmData ${api}) productionSlot=$(prodSlot "${json}") healthProd=$(http_status "http://$(healthURL "${json}")") healthStaging=$(http_status "http://stage$(healthURL "${json}")")
-  echo "${api}
-    ${slot1} $(displayProd "${slot1}" "${productionSlot}") $(status "${json}" "${slot1}") tag=$(tag "${json}" "${slot1}") $(displayHealth "${slot1}" "${productionSlot}" "${healthProd}" "${healthStaging}")
-    ${slot2} $(displayProd "${slot2}" "${productionSlot}") $(status "${json}" "${slot2}") tag=$(tag "${json}" "${slot2}") $(displayHealth "${slot2}" "${productionSlot}" "${healthProd}" "${healthStaging}")"
+function displayHealth { if [ $1 == $2 ]; then echo "$3"; else echo "$4"; fi ; }
+function displayHeader { printf "${format}\n" "api" "slot" "role" "health" "status" "tag"; }
+function displaySlot {
+    api="$1" slot="$2" json=$(getHelmData ${api}) productionSlot=$(prodSlot "${json}") healthProd=$(http_status "http://$(healthURL "${json}")") healthStaging=$(http_status "http://stage$(healthURL "${json}")")
+    printf "${format}" \
+        "${api}" \
+        "${slot}" \
+        "$(displayProd "${slot}" "${productionSlot}")" \
+        "$(displayHealth "${slot}" "${productionSlot}" "${healthProd}" "${healthStaging}")" \
+        "$(status "${json}" "${slot}")" \
+        "$(tag "${json}" "${slot}")"
+}
+
+echo "$(displayHeader)"
+for slot in "${slots[@]}"; do 
+for api in "${apis[@]}"; do 
+echo "$(displaySlot "${api}" "${slot}")"
+done
 done
