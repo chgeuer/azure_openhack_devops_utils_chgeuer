@@ -1,7 +1,14 @@
 #!/bin/bash
 # Requires 'helm', 'yq', 'jq', 'sed', 'curl'
 slots=( "blue" "green" ) apis=( "api-poi" "api-trip" "api-user" "api-user-java" ) format="%-15s %-5s %-10s %-6s %-12s %-8s %s"
-function getHelmData { helm get values --all "$1" | yq . ; }
+
+declare -A helmValues
+function downloadHelmData { helm get values --all "$1" | yq . ; }
+for api in "${apis[@]}"; do
+    helmValues["${api}"]="$(downloadHelmData "${api}")"
+done
+function getHelmData { echo "${helmValues["$1"]}" ; }
+
 function getJsonVal { echo $(echo "$1" | jq -r "$2") ; }
 function prodSlot { echo $(getJsonVal "$1" ".productionSlot") ; }
 function status { echo $(getJsonVal "$1" ".$2.enabled" | sed 's/true/enabled/g' | sed 's/false/disabled/g') ; }
