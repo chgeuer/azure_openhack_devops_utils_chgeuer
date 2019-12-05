@@ -19,7 +19,7 @@ function http_status { echo $(curl --silent --output /dev/null --write-out '%{ht
 function displayProd { if [ $1 == $2 ]; then echo "Production"; else echo "Staging"; fi ; }
 function displayHealth { if [ $1 == $2 ]; then echo "$3"; else echo "$4"; fi ; }
 function displayHeader { printf "${format}\n" "helm release" "slot" "role" "health" "status" "tag" ; }
-function displaySep { printf "${format}\n" "----" "----" "----" "----" "----" "----" ; }
+function displaySep { printf "${format}\n" "---------------" "-----" "----------" "------" "------------" "--------" ; }
 function displaySlot {
     api="$1" slot="$2"
     json=$(getCachedHelmData ${api})
