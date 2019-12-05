@@ -18,7 +18,7 @@ function healthURL { echo "$(healthHost "$1")$(healthPath "$1")" ; }
 function http_status { echo $(curl --silent --output /dev/null --write-out '%{http_code}' $1) ; }
 function displayProd { if [ $1 == $2 ]; then echo "Production"; else echo "Staging"; fi ; }
 function displayHealth { if [ $1 == $2 ]; then echo "$3"; else echo "$4"; fi ; }
-function displayHeader { printf "${format}\n" "api" "slot" "role" "health" "status" "tag" ; }
+function displayHeader { printf "${format}\n" "helm release" "slot" "role" "health" "status" "tag" ; }
 function displaySep { printf "${format}\n" "----" "----" "----" "----" "----" "----" ; }
 function displaySlot {
     api="$1" slot="$2"
