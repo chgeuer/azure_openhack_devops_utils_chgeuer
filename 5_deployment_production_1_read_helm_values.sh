@@ -1,10 +1,6 @@
 #!/bin/bash
-
-#
 # Download vars from variable group REST API
-#
 
-# variableGroupName="$(helmReleaseName)"
 variableGroupName="${HELMRELEASENAME}"
 variableGroupId="1"
 
@@ -13,9 +9,16 @@ url="${SYSTEM_TASKDEFINITIONSURI}${SYSTEM_TEAMPROJECT}/_apis/distributedtask/var
 
 json="$( curl --silent --request GET --header "Authorization: Bearer ${SYSTEM_ACCESSTOKEN}" "${url}" )"
 variables="$( echo "${json}" | jq -r ".value[] | select( .name == \"${variableGroupName}\" ) | .variables" )"
-echo "JSON from variable group ${variableGroupName}: $( echo "${variables}" | jq . )"
+
+# echo "JSON from variable group ${variableGroupName}: $( echo "${variables}" | jq . )"
 currentSlotName="$( echo "${variables}" | jq -r ".currentSlotName.value" )"
+if [ "${currentSlotName}" == "" ] ; then
+  echo "Cannot determine production slot"
+  exit 1
+fi
+
 nextSlotName="$( echo "${variables}" | jq -r ".nextSlotName.value" )"
 
+# Output values into the Azure DevOps current pipeline
 echo "##vso[task.setvariable variable=currentSlotName]${currentSlotName}"
 echo "##vso[task.setvariable variable=nextSlotName]${nextSlotName}"
