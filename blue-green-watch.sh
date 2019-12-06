@@ -3,8 +3,7 @@
 # Author: Christian Geuer-Pollmann <chgeuer@microsoft.com>
 
 #source ./_shared.sh
-#source "$( dirname "$( readlink -f "$0" )" )/_shared.sh"
-source "${SYSTEM_ARTIFACTSDIRECTORY}/_deploymentUtils/deploymentUtils/_shared.sh"
+source "$( dirname "$( readlink -f "$0" )" )/_shared.sh"
 
 declare -A helmValues
 for releaseName in "${releaseNames[@]}"; do
