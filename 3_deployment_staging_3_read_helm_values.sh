@@ -1,6 +1,7 @@
 #!/bin/bash
 # Read helm values
-source ./_shared.sh
+# source "$( dirname "$( readlink -f "$0" )" )/_shared.sh"
+source "${SYSTEM_ARTIFACTSDIRECTORY}/_deploymentUtils/deploymentUtils/_shared.sh"
 
 # Read Azure DevOps pipeline variable HelmReleaseName
 echo "Using Helm release name '${HELMRELEASENAME}'"
