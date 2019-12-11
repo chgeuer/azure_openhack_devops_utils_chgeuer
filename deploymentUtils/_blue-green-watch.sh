@@ -5,46 +5,6 @@
 #source ./_shared.sh
 #source "$( dirname "$( readlink -f "$0" )" )/_shared.sh"
 
-function installHelm { 
-    echo >&2 "Installing helm"
-    mkdir -p ./helm
-    curl --silent \
-        https://storage.googleapis.com/kubernetes-helm/helm-v2.14.3-linux-amd64.tar.gz \
-        -o helm-v2.14.3-linux-amd64.tar.gz
-    tar xvfz helm-v2.14.3-linux-amd64.tar.gz -C ./helm 2>&1 >/dev/null
-    rm helm-v2.14.3-linux-amd64.tar.gz
-    echo "alias helm=\"$(pwd)/helm/linux-amd64/helm\"" >> ~/.bash_aliases
-    source ~/.bash_aliases
-}
-
-hash helm 2>/dev/null || { installHelm ; }
-if ! [[ "$(helm version --short)" =~ "2.14.3" ]]; then installHelm ; fi
-
-hash yq 2>/dev/null || { 
-    pip install yq --user 2>&1 >/dev/null ; 
-    echo "alias yq=\"~/.local/bin/yq\"" >> ~/.bash_aliases
-    source ~/.bash_aliases
-}
-
-
-declare slots=( 'blue' 'green' )
-declare releaseNames=( "api-poi" "api-trip" "api-user" "api-user-java" )
-
-function indexOf { local slot="$1" ; local i="$(echo ${slots[@]} | tr -s " " "\n" | grep -n "${slot}" | cut -d":" -f 1)" ; echo "$((i-1))" ; }
-function numberOfSlots { echo "${#slots[@]}" ; }
-function indexNextSlot { local slot="$1" ; curr=$(indexOf "${slot}") ; len=$(numberOfSlots) ; echo "$(( (curr + 1) % len ))" ; }
-function nextSlot { local slot="$1"; n="$( indexNextSlot "${slot}" )" ; echo "${slots[$n]}" ; }
-
-function getJsonVal { echo "$( echo "$1" | jq -r "$2" )" ; }
-function prodSlot   { echo "$( getJsonVal "$1" ".productionSlot" )" ; }
-
-function healthHost { echo "$( getJsonVal "$1" ".ingress.rules.endpoint.host" )" ; }
-function healthPath { echo "$( getJsonVal "$1" ".ingress.rules.endpoint.paths[] | select(.path | contains(\"healthcheck\")) | .path" )" ; }
-function healthUrl  { echo "$( healthHost "$1" )$( healthPath "$1" )" ; }
-function httpStatus { echo "$( curl --silent --output /dev/null --write-out '%{http_code}' $1 )" ; }
-
-function getLiveHelmData { local releaseName="$1" ; echo "$( helm get values --all "${releaseName}" | yq . )" ; }
-
 declare -A helmValues
 for releaseName in "${releaseNames[@]}"; do
     helmValues["${releaseName}"]="$( getLiveHelmData "${releaseName}" )";

@@ -2,7 +2,7 @@
 #!/bin/bash
 # Requires 'helm', 'yq', 'jq', 'sed', 'curl', 'printf"
 # Author: Christian Geuer-Pollmann <chgeuer@microsoft.com>
-source ./_shared.sh
+#source ./_shared.sh
 
 declare -A helmValues
 for releaseName in "${releaseNames[@]}"; do
