@@ -1,10 +1,13 @@
 # README
 
 ```bash
-curl https://raw.githubusercontent.com/chgeuer/azure_openhack_devops_utils_chgeuer/master/ \
-    blue-green-watch.sh -o ./blue-green-watch.sh && \
-    chmod +x ./blue-green-watch.sh && \
-    watch -n 1 ./blue-green-watch.sh
+#!/bin/bash
+repo="chgeuer/azure_openhack_devops_utils_chgeuer"
+script="blue-green-watch.sh"
+url="https://raw.githubusercontent.com/${repo}/master/${script}"
+curl "${url}" -o "./${script}" && \
+    chmod +x "./${script}" && \
+    watch -n 1 "./${script}"
 ```
 
 - Deployment pipeline needs variable `helmReleaseName` having values like `api-poi`
