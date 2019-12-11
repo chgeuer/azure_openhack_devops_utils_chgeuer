@@ -26,6 +26,7 @@ hash yq 2>/dev/null || {
     pip install yq --user 2>&1 >/dev/null ; 
     echo "PATH=\"\$HOME/.local/bin:\$PATH\"" >> ~/.profile
     echo "PATH=\"\$HOME/.local/bin:\$PATH\"" > ~/.bashrc
+    source ~/.bashrc
 }
 
 declare slots=( 'blue' 'green' )

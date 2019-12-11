@@ -5,7 +5,7 @@
 repo="chgeuer/azure_openhack_devops_utils_chgeuer"
 script="blue-green-watch.sh"
 url="https://raw.githubusercontent.com/${repo}/master/${script}"
-curl "${url}" -o "./${script}" && \
+curl --silent "${url}" -o "./${script}" && \
     chmod +x "./${script}" && \
     watch -n 1 "./${script}"
 ```
