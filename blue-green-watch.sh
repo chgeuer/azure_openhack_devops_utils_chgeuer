@@ -13,8 +13,10 @@ function installHelm {
         -o helm-v2.14.3-linux-amd64.tar.gz
     tar xvfz helm-v2.14.3-linux-amd64.tar.gz -C ./helm 2>&1 >/dev/null
     rm helm-v2.14.3-linux-amd64.tar.gz
-    echo "alias helm=\"$(pwd)/helm/linux-amd64/helm\"" >> ~/.bash_aliases
-    source ~/.bash_aliases
+    #echo "alias helm=\"$(pwd)/helm/linux-amd64/helm\"" >> ~/.bash_aliases
+    echo "PATH=\"$(pwd)/helm/linux-amd64:\$PATH\"" >> ~/.profile
+    echo "PATH=\"$(pwd)/helm/linux-amd64:\$PATH\"" >> ~/.bashrc
+    source ~/.bashrc
 }
 
 hash helm 2>/dev/null || { installHelm ; }
@@ -22,10 +24,9 @@ if ! [[ "$(helm version --short)" =~ "2.14.3" ]]; then installHelm ; fi
 
 hash yq 2>/dev/null || { 
     pip install yq --user 2>&1 >/dev/null ; 
-    echo "alias yq=\"~/.local/bin/yq\"" >> ~/.bash_aliases
-    source ~/.bash_aliases
+    echo "PATH=\"\$HOME/.local/bin:\$PATH\"" >> ~/.profile
+    echo "PATH=\"\$HOME/.local/bin:\$PATH\"" > ~/.bashrc
 }
-
 
 declare slots=( 'blue' 'green' )
 declare releaseNames=( "api-poi" "api-trip" "api-user" "api-user-java" )
@@ -55,7 +56,7 @@ declare format="| %-15s | %-5s | %-10s | %-6s | %-7s | %6s |"
 function displayHeader { printf "${format}\n" "helm release" "slot" "role" "health" "status" "tag" ; }
 function displaySep { printf "${format}\n" "---------------" "-----" "----------" "------" "-------" "------" ; }
 function displayProd { local s1="$1" s2="$2"; if [ "${s1}" == "${s2}" ]; then echo "Production"; else echo "Staging"; fi ; }
-function displayHealth { if [ $1 == $2 ]; then echo "$3"; else echo "$4"; fi ; }
+function displayHealth { if [[ $1 == $2 ]]; then echo "$3"; else echo "$4"; fi ; }
 function displayStatus { echo "$( getJsonVal "$1" ".$2.enabled" | sed 's/true/running/g' | sed 's/false/empty/g' )" ; }
 function displayTag { local json="$1" slot="$2"; echo "$( getJsonVal "${json}" ".${slot}.tag" )" ; }
 function displaySlot {
