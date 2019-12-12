@@ -3,14 +3,22 @@
 # -v The ohteamvalues file from the ZIP file
 # -r The directory where https://github.com/Azure-Samples/openhack-devops-team/ is checked-out to
 
-while getopts v:r: option
-do
-case "${option}"
-in
-v) VALUEFILE=${OPTARG};;
-r) REPO=${OPTARG};;
-esac
-done
+if [ $# -ne 2 ]; then 
+   echo "Need to specify path to values file and path to sources"
+   exit 1
+fi
+
+VALUEFILE=$1
+REPO=$2
+
+# while getopts v:r: option
+# do
+# case "${option}"
+# in
+# v) VALUEFILE=${OPTARG};;
+# r) REPO=${OPTARG};;
+# esac
+# done
 
 ohteamvalues="$( cat "${VALUEFILE}" )"
 
