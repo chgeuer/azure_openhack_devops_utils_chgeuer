@@ -11,6 +11,11 @@ fi
 VALUEFILE=$1
 REPO=$2
 
+
+echo "Using values from file \"${VALUEFILE}\""
+echo "Using repo in directory  \"${REPO}\""
+
+
 # while getopts v:r: option
 # do
 # case "${option}"
