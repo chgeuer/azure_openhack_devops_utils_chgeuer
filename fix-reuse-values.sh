@@ -1,14 +1,18 @@
 #!/bin/bash
 
-#
-# The ohteamvalues file from the ZIP file
-#
-ohteamvalues="$(cat ./ohteamvalues)"
+# -v The ohteamvalues file from the ZIP file
+# -r The directory where https://github.com/Azure-Samples/openhack-devops-team/ is checked-out to
 
-#
-# The directory where https://github.com/Azure-Samples/openhack-devops-team/ is checked-out to
-#
-sourceDir="."
+while getopts v:r: option
+do
+case "${option}"
+in
+v) VALUEFILE=${OPTARG};;
+r) REPO=${OPTARG};;
+esac
+done
+
+ohteamvalues="$( cat "${VALUEFILE}" )"
 
 declare -A charts=(
    ["api-poi"]="apis/poi/charts/mydrive-poi"
@@ -17,10 +21,12 @@ declare -A charts=(
    ["api-user"]="apis/userprofile/charts/mydrive-user"
 )
 
+echo "Cleaning Helm deployment for team \"$( echo "${ohteamvalues}" | egrep "^teamNumber$(printf '\t')" | awk '{print $2}' )\""
+
 for chartName in "${charts[@]}"; do
    chartDir="${charts[$chartName]}"
 
-   endpoint="$( echo "${ohteamvalues}" | egrep "^endpoint" | awk '{print $2}' )"
+   endpoint="$( echo "${ohteamvalues}" | egrep "^endpoint$(printf '\t')" | awk '{print $2}' )"
    acr="$( echo "${ohteamvalues}" | egrep "^ACR$(printf '\t')" | awk '{print $2}' )"
    image="${acr}.azurecr.io/devopsoh/${chartName}"
 
@@ -28,7 +34,7 @@ for chartName in "${charts[@]}"; do
    helm delete --purge "${chartName}"
 
    echo "Installing clean version of ${chartName}"
-   helm install "${chartDir}" --name "${chartName}" \
+   helm install "${REPO}/${chartDir}" --name "${chartName}" \
        --set "repository.image=${image}" \
        --set "env.webServerBaseUri=http://${endpoint}" \
        --set "ingress.rules.endpoint.host=${endpoint}"
