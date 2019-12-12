@@ -1,10 +1,16 @@
 #!/bin/bash
 
-# -v The ohteamvalues file from the ZIP file
-# -r The directory where https://github.com/Azure-Samples/openhack-devops-team/ is checked-out to
+#
+# git clone https://github.com/Azure-Samples/openhack-devops-team/
+#
+# ./fix-reuse-values.sh ./ohteamvalues ./openhack-devops-team
+#
 
 if [ $# -ne 2 ]; then 
-   echo "Need to specify path to values file and path to sources"
+   echo "Need to specify path to values file and path to sources.
+   Example: 
+      git clone https://github.com/Azure-Samples/openhack-devops-team/ ./ohsources
+      $0 ./ohteamvalues.txt ./ohsources"
    exit 1
 fi
 
