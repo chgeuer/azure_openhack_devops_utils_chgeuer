@@ -23,7 +23,7 @@ declare -A charts=(
 
 echo "Cleaning Helm deployment for team \"$( echo "${ohteamvalues}" | egrep "^teamNumber$(printf '\t')" | awk '{print $2}' )\""
 
-for chartName in "${charts[@]}"; do
+for chartName in "${!charts[@]}"; do
    chartDir="${charts[$chartName]}"
 
    endpoint="$( echo "${ohteamvalues}" | egrep "^endpoint$(printf '\t')" | awk '{print $2}' )"
