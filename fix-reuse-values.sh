@@ -17,7 +17,7 @@ declare -A charts=(
    ["api-user"]="apis/userprofile/charts/mydrive-user"
 )
 
-for chartName in "${charts[@]}"; do
+for chartName in "${!charts[@]}"; do
    chartDir="${charts[$chartName]}"
 
    endpoint="$( echo "${ohteamvalues}" | egrep "^endpoint" | awk '{print $2}' )"
