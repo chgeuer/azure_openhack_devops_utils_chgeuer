@@ -4,6 +4,9 @@ This repo contains my helper utilities for the Microsoft OpenHack in DevOps.
 
 <p><img src="doc/blue-green-watch.png" alt="Screenshot of the blue-green utility" /></p>
 
+<video src="https://github.com/chgeuer/azure_openhack_devops_utils_chgeuer/raw/master/doc/blue-green.mp4" controls>
+</video>
+
 ## Installation
 
 ```bash
